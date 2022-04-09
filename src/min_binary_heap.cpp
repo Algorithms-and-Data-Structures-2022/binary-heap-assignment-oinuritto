@@ -39,7 +39,14 @@ namespace assignment {
     if (size_ == capacity_) {
       // двоичная куча заполнена, операция вставки нового узла невозможна
       return false;
+    } else {
+      data_[size_].key = key;
+      data_[size_].value = value;
+      size_++;
+      sift_up(size_ - 1);
+      return true;
     }
+
 
     // Tips:
     // 1. Вставьте новый узел в "конец" массива.
@@ -54,6 +61,12 @@ namespace assignment {
     if (size_ == 0) {
       // двоичная куча пустая, операция извлечения корня невозможна
       return std::nullopt;
+    } else {
+      Node node = data_[0];
+      data_[0] = data_[size_ - 1];
+      size_--;
+      heapify(0);
+      return node.value;
     }
 
     // Tips:
@@ -74,16 +87,31 @@ namespace assignment {
     // 2. Установите ключом удаляемого узла наименьшее возможное значение ключа min_key_value.
     // 3. Вызовите над индексом удаляемого элемента функцию sift_up.
     // 4. Извлеките корневой (удаляемый) узел из кучи операцией Extract.
+    auto remove_index = search_index(key);
+
+    if (!remove_index.has_value()) {
+      return false;
+    }
+
+    data_[remove_index.value()].key = min_key_value;
+    sift_up(remove_index.value());
+    Extract();
 
     return true;
   }
 
   void MinBinaryHeap::Clear() {
     // Write your code here ...
+      size_ = 0;
   }
 
   std::optional<int> MinBinaryHeap::Search(int key) const {
     // Write your code here ...
+    for (int i = 0; i < size_; i++) {
+      if (data_[i].key == key) {
+        return data_[i].value;
+      }
+    }
     return std::nullopt;
   }
 
@@ -154,6 +182,11 @@ namespace assignment {
 
   std::optional<int> MinBinaryHeap::search_index(int key) const {
     // Write your code here ...
+    for (int i = 0; i < size_; i++) {
+      if (data_[i].key == key) {
+        return i;
+      }
+    }
     return std::nullopt;
   }
 
